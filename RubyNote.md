@@ -264,7 +264,7 @@
           end
         end
       end
-    ```
+  ```
   ##### 12.1.3. Redirects và Wildcard Routes
   * Sử dụng khi ta muốn tạo ra những URL dễ nhớ, ngắn gọn nhưng vẫn đảm bảo gửi đi những thông số cần thiết
   ```ruby
@@ -292,15 +292,16 @@
   * Ta cũng có thể sử dụng `content_for method` để đưa thông tin từ 1 `layout` sang 1 `layout` khác
   * VD: Ta có 1 file `static_page.html.erb`: trang này sẽ dùng cho `StaticPagesController`
     - Nó sẽ kế thừa `layouts` từ application.html.erb, nhưng ta muốn loại bỏ đi 1 vài CSS không cần thiết
-    ```
-    ruby
+    ```ruby
       # app/views/layouts/static_pages.html.erb
       <% content_for :stylesheets do %>
         #navbar {display: none}
       <% end %>
       <%= render :template => "layouts/application" %>
     ```
+
     - Sau đó trong `application layout` ta cần thiết lập để lọc lấy nội dung đó và sử dụng chúng
+
     ```ruby
       # app/views/layouts/application.html.erb
       ...
@@ -365,7 +366,7 @@
   #### 13.4. .present?
   * Là `object` không `blank`
   * Ngoài ra còn 1 `method` hay dùng đó là `.presence`
-    - `method` này sẽ trả về `object` gọi nó nếu `object` đó `present` còn không trả về nil
+    - `method` này sẽ trả về `object` gọi nó nếu `object` đó `present` còn không trả về `nil`
 
 ### 14. Validation
   * Là các thao tác kiểm tra dữ liệu trước khi lưu object vào db
@@ -373,7 +374,6 @@
     - `create, create!`
     - `update, update!`
     - `save, save!`
-    - `update, update!`
   * Validate helpers của ActiveRecord
     - `Syntax: validates :attr_name, type`
     - `presence: true` không bỏ trống
@@ -386,3 +386,59 @@
     - `numericality: true` kiểu số
     - `format: { with: VALID_EMAIL_REGEX }`: email
     - `inclusion: {in: [true, false]}` xét gía trị có thuộc 1 tập cho trước không
+
+### 15. Phân biệt destroy, delete
+  * Cả 2 phương thức này đều xóa bản ghi trong db
+  * `Delete`: Không gọi `callback` mà xóa bản ghi luôn
+  * `Destroy`: Gọi tới `callback` - `VD: before_destroy` rồi mới xóa bản ghi trong db
+
+### 16. Sự khác nhau giữa new, create, save
+  * `new` sẽ chỉ tạo ra 1 `object` nhưng không lưu vào `db`
+  * `create` tạo ra `object` và lưu vào db 1 lần
+  * `save` lưu `object` nếu `object` mới được tạo, nếu không thì cập nhật
+
+### 17. Eager loading
+  * Thay vì truy xuất nhiều lần vào db dẫn đến việc mất an toàn và giảm `performance`
+    - `Eager Loading` sẽ cải thiện vấn đề trên - (N + 1 query)
+    
+    ```ruby
+      employees = Employee.includes(:title).limit(10)
+      employees.each do |employee|
+        puts employee.title.name
+      end
+    ```
+
+### 18. Sự khác nhau giữa render và redirect_to
+  * `render` Thường dùng để `render` ra khung `html`
+  * `redirect_to` sẽ điều hướng trang tới liên kết
+
+### 19. Active Record Associations
+  #### 19.1. Giới thiệu
+  * Associations là sự liên kết giữa 2 model với nhau
+  * Giúp code dễ hiểu, ngắn gọn
+  #### 19.2. Các loại Associations
+  * Rails hỗ trợ 6 loại như sau:
+    + belongs_to
+    + has_one
+    + has_many
+    + has_many:through
+    + has_one:through
+    + has_and_belongs_to_many
+  ##### 19.2.1. belongs_to association
+  * Thiết lập kết nối 1-1 (one-one) giữa model này với model khác
+  * Ta cần sử dụng khóa ngoại cho bảng
+  ##### 19.2.2. has_one association
+  * Cũng thiết lập kết nối 1-1 (one-one)
+  * Nó cho thấy 1 đối tượng của model này sở hữu 1 đối tượng của model khác
+  ##### 19.2.3. has_many Association
+  * has_many thiết lập kết nối one-many tới 1 model khác
+  * Ta thường thấy has_many trong model kia ở mối quan hệ belongs_to
+  * 1 đối tượng của model này sẽ có 0 hoặc nhiều đối tượng của model khác
+  ##### 19.2.4. has_many :through Association
+  * Thường dùng để thiết lập mối quan hệ many-many (n-n) giữa 2 model với nhau
+  * Thông thường đối với quan hệ (n-n) ta sẽ tạo ra 1 model thứ 3 ở giữa với 2 quan hệ (1-n)
+  ##### 19.2.5. has_one :through Association
+  * Thiết lập mối quan hệ one-one (1-1) giữa 2 model với nhau
+  * Mối quan hệ 1-1 này là thông qua 1 model thứ 3
+  ##### 19.2.6. has_and_belongs_to_many Association
+  * Tạo ra 1 quan hệ n-n trực tiếp mà không thông qua 1 model khác
