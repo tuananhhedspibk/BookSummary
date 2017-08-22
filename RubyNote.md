@@ -1,4 +1,4 @@
-# Ruby Note :green_book: :memo:
+# Ruby On Rails & Ruby Note :green_book: :memo:
 
 ### 1. Block
   * Mọi thứ nằm giữa {} hoặc `do` và `end` là 1 `Block`
@@ -366,3 +366,23 @@
   * Là `object` không `blank`
   * Ngoài ra còn 1 `method` hay dùng đó là `.presence`
     - `method` này sẽ trả về `object` gọi nó nếu `object` đó `present` còn không trả về nil
+
+### 14. Validation
+  * Là các thao tác kiểm tra dữ liệu trước khi lưu object vào db
+  * Các method sau sẽ gọi validate
+    - `create, create!`
+    - `update, update!`
+    - `save, save!`
+    - `update, update!`
+  * Validate helpers của ActiveRecord
+    - `Syntax: validates :attr_name, type`
+    - `presence: true` không bỏ trống
+    - `absence: true` phải để trống
+    - `uniqueness: true` duy nhất
+    - Tính đồng nhất - So sánh tính đồng nhất giữa tên thuộc tính và #{tên thuộc tính}_confirmation
+      * `confirmation: true`
+    - Độ dài
+      * `validates :title, length: { [minimum | maximum | is]: 1 } | { in: 1..10 }`
+    - `numericality: true` kiểu số
+    - `format: { with: VALID_EMAIL_REGEX }`: email
+    - `inclusion: {in: [true, false]}` xét gía trị có thuộc 1 tập cho trước không
