@@ -350,3 +350,19 @@
 
       # method hello sẽ được tạo ra khi gọi
     ```
+
+### 13. .nil?, .empty?, .blank?, .presents?
+  #### 13.1. .nil?
+  * `Object class` có `method nil?` nên mọi object trong `ruby` đều có `nil? method`
+  * Chỉ có `nil.nil? = true`
+    - Trong `ruby` mọi object đều có gía trị `boolean` là `true`, ngoại trừ `false` và `nil`
+  #### 13.2. .empty?
+  * Là hàm có sẵn của `string`, `hash`, `array`
+  * Trả về `true` khi `object.length == 0`
+  #### 13.3. .blank?
+  * `1 object` được coi là `blank` nếu nó `false`, `empty` hoặc là 1 chuỗi chỉ gồm các khoảng trắng
+  * Là 1 hàm của `Rails`
+  #### 13.4. .present?
+  * Là `object` không `blank`
+  * Ngoài ra còn 1 `method` hay dùng đó là `.presence`
+    - `method` này sẽ trả về `object` gọi nó nếu `object` đó `present` còn không trả về nil
