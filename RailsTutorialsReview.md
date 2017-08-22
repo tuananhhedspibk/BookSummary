@@ -239,6 +239,61 @@
   * Cũng có thể fake `DELETE request` bằng việc sử dụng `1 form` và `POST request` - chỉ hoạt động khi không có JS
   * Trong file view, ta sẽ sử dụng `paginate` bằng: `will_paginate method`, nó sẽ tự động tìm `@users object`, và sau đấy sẽ hiển thị các `pagination link` sang các page khác. Để giúp cho `will_paginate method` hoạt động ta sẽ cần sử dụng `paginate method. paginate` sẽ có `1 hash argument` có `key` là `:page` có `value` bằng với `page được requested`. `paginate method` sẽ trích rút từ db ra 1 cụm dữ liệu (vd: 30 bản ghi) ở 1 thời điểm dựa trên `:page parameter`, nếu `page = nil` thì `paginate method` sẽ trả về page đầu tiên. `params[:page]` được gen 1 cách tự động từ `will_paginate`, có thể `config` số bản ghi mỗi trang bằng: `per_page: 6`
 
+### Chapter 11: Account activation
+  * Sử dụng activation token và digest đối với user
+  * Gửi cho user 1 email với token và active link
+  * Ý tưởng cơ bản
+    - user sẽ được khởi tạo với trạng thái `unactive`
+    - Khi user sign up sẽ có 1 activation token được gen ra cùng với activation digest tương ứng
+    - Lưu activation digest trong db, gửi cho user 1 email cho user bao gồm activation token và user's email
+    - Sau khi người dùng click vào link thì sẽ tìm trong db theo địa chỉ email và so khớp activation token và digest
+    - Nếu user đã được authenticated (xác thực) thì sẽ chuyển trạng thái từ "unactivated" -> "activated"
+  * Ta sẽ mô hình hóa "account activation" như là 1 resource mặc dùng nó không liên kết với Active Record model
+    - Ta sẽ tương tác với chúng thông qua REST URL
+    - `Activation link` sẽ modified user's activation status bằng cách thực hiện 1 PATCH request - gọi UPDATE method
+  * Các activation token phải khác nhau đôi một
+    - Nếu ta lưu trữ token dưới dạng 1 string trong db và activation URL -> ảnh hưởng đến bảo mật
+  * Ta nên add thêm activation_token và activation_digest cho mỗi user object trước khi nó được save vào db
+    - Ta sẽ sử dụng [before_save callback]: tự động được gọi trc khi object được lưu vào db - bao gồm cả trường hợp created và updated
+    - Với activation digest ta chỉ cần created -> before_create
+      * before_create :create_activation_digest => method reference => thường dùng hơn là cách truyền block
+    - Để chuyển từ token -> digest: sử dụng gem BCrypt
+  * Với remember user ta sẽ sử dụng "update_attribute" do người dùng cần remember khi user object đã có trong db còn ở đây là khi user còn chưa được lưu vào db - vời mới tạo, ta đã tạo ra activation_token, activation_digest
+    - Khi user được định nghĩa bởi User.new thì nó sẽ tự động activation_token và activation_digest 
+    - Sau đó 2 thuộc tính này sẽ được tham chiếu tới column trong db, ngay khi user được lưu vào db chúng sẽ được ghi vào db
+    - Với các thuộc tính ảo ta sẽ sử dụng :attr_accessor
+  * Để gửi mail ta cần 1 mailer từ Action Mailer library
+    - Mailers về cơ bản được cấu trúc giống như controller actions
+    - Email templates được định nghĩa như là các views
+  * Gen mailer: rails g mailer Name method_name
+    - Câu lệnh này ngoài việc gen ra các method có tên như trên mà còn gen ra các templates tương ứng với nó
+      * Với mỗi mailer sẽ có 2 templates: plain_text mail, HTML mail
+    - Trong mailer: 
+      * appllication_mailer: default from: địa chỉ gửi chung & mặc định cho app
+      * Với các mailer cụ thể đều có địa chỉ nhận
+    - Trong view template: có biến instance @greeting cũng tương tự như với "view-controller"
+  * mail to: email_add, subject: "string"
+  + Cách authenticated?
+    - Tìm ra user thông qua user mail
+    - Sau đó dùng activation_token để kích hoạt
+    - link trong email: mail + activation_token
+  + Do ta mô hình hóa activation sử dụng Account Activation resource nên bản thân token có thể sử dụng như argument trong named routed
+    - edit_account_activation_url(@user.activation_token, ...)
+    - Khi đó với: edit_user_url(user) -> URL: /users/1/edit
+      => account activation link:   -> URL: /account_activations/q5lt38hQDc_959PVoo6b7A/edit
+        * q5lt38hQDc_959PVoo6b7A: URL-safe base64 string được gen bởi new_token method <-> tương tự như user_id
+        * Trong Activation controller edit method: token sẽ có mặt trong params
+        * Để include cả email -> sử dụng query parameter: key=value đằng sau ? của URL
+          + account_activations/q5lt38hQDc_959PVoo6b7A/edit?email=foo%40example.com (%40 = @ - mã hóa cho @ để có được URL hợp lệ)
+        * Trong Rails để có thể thiết lập "query parameter" include hash trong named route
+          + edit_account_activation_url(@user.activation_token, email: @user.email)
+            - Khi đó Rails sẽ tự động mã hóa các kí tự đặc biệt
+            - Trong controller thì email sẽ ko được mã hóa, và có trong params[:email]
+  + Có thể sử dụng email preview để xem kết quả của email
+  + Metaprogramming
+    - Bản chất là sử dụng 1 program để viết ra 1 program
+    - Ta có thể sử dụng send method để gọi 1 method khác, thông qua việc truyền vào 1 symbol, 1 string cho method send đóng
+
 ## Chapter 13: User microposts
   * Sử dụng `model:reference` -> tạo ra 1 cột là khóa ngoại, có index mặc định ở đó
   * `build method` tạo ra 1 object và lưu nó vào bộ nhớ chứ không lưu vào db
