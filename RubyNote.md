@@ -194,3 +194,159 @@
         end
       end
     ```
+
+### 10. Sự khác nhau giữa resources và resource
+  ```ruby
+    resources :orders
+    => rake routes
+
+         orders GET        /orders(.:format)            orders#index
+                POST       /orders(.:format)            orders#create
+      new_order GET        /orders/new(.:format)        orders#new
+     edit_order GET        /orders/:id/edit(.:format)   orders#edit
+          order GET        /orders/:id(.:format)        orders#show
+                PUT        /orders/:id(.:format)        orders#update
+                DELETE     /orders/:id(.:format)        orders#destroy
+
+    resource :order
+    => rake routes
+          order POST       /order(.:format)            orders#create
+      new_order GET        /order/new(.:format)        orders#new
+     edit_order GET        /order/:id/edit(.:format)   orders#edit
+                GET        /order/:id(.:format)        orders#show
+                PUT        /order/:id(.:format)        orders#update
+                DELETE     /order/:id(.:format)        orders#destroy
+  ```
+
+### 11. Sự khác nhau giữa find và find_by
+  * find: nếu không tìm thấy thì sẽ `raise Exception` - **ActiveRecord::RecordNotFound exception**
+  * find_by: chỉ ra thuộc tính cần tìm kiếm theo, nếu không tìm thấy thì trả về `nil`
+
+### 12. Sự khác nhau giữa member route và collection route
+  #### 12.1. Advanced Routing
+  ##### 12.1.1. Nested Routing
+  * Ta hoàn toàn có thể viết các resource lồng nhau
+  * VD: (http://demosite.com/courses/1/students/3)
+  ```ruby
+    DemoApp::Application.routes.draw do
+      resources :courses do
+        resources :students
+      end
+    end
+
+    URL: course_student  GET  /courses/:course_id/students/:id(.:format)  student#show
+    # Để truy cập được URL này ta cần params_id cho cả course, student
+  ```
+  ##### 12.1.2. Member and Collection Routes
+  * Ta sẽ sử dụng `member method` để thêm 1 `non-RESTful route` vào 1 `resources`
+  ```ruby
+    #config/routes.rb
+    DemoApp::Application.routes.draw do
+      resources :courses do
+        member do
+          get "review"
+        end
+      end
+    end
+
+    # Route này sẽ ánh xạ đến action courses#review tương ứng trong controller
+  ```
+  * Ta sẽ sử dụng `collection method` để thêm 1 `non-RESTful route` có chức năng tương đương với `action index`
+  ```ruby
+      # config/routes.rb
+      DemoApp::Application.routes.draw do
+        resources :courses do
+          member do
+            get "review"  # review một khóa học (yêu cầu ID)
+          end
+          collection do
+            get "upcoming"  # Liệt kê tất cả các khóa học sắp khai giảng
+          end
+        end
+      end
+    ```
+  ##### 12.1.3. Redirects và Wildcard Routes
+  * Sử dụng khi ta muốn tạo ra những URL dễ nhớ, ngắn gọn nhưng vẫn đảm bảo gửi đi những thông số cần thiết
+  ```ruby
+    # config/routes.rb
+    DemoApp::Application.routes.draw do
+      get 'courses/:course_name' => redirect('/courses/%{course_name}/students'), :as => "course"
+    end
+
+    URLs ban đầu
+    /courses/demo01
+    /courses/demo02
+
+    # Khi các URLs này được click vào, chúng sẽ bị redirect sang các URLs tương ứng sau:
+    /courses/demo01/students
+    /courses/demo02/students
+  ```
+  * Lúc này các URLs sẽ thân thiện hơn với người dùng - pretty URL
+  #### 12.2. Advanced Layouts
+  * Việc sử dụng lại `layouts` sẽ giảm thiểu đi số lượng code trong các `view layer`
+  * Ta có thể chia nhỏ 1 layouts thành các khối như: `body`, `footer`, `header`, `sidebar`, ...
+  * Có thể sử dụng nhiều `layouts` cho 1 page bằng cách từ `layouts` hiện tại ta render ra `layout` khác sử dụng method
+  ```ruby
+    render template: "your_layout.html.erb"
+  ```
+  * Ta cũng có thể sử dụng `content_for method` để đưa thông tin từ 1 `layout` sang 1 `layout` khác
+  * VD: Ta có 1 file `static_page.html.erb`: trang này sẽ dùng cho `StaticPagesController`
+    - Nó sẽ kế thừa `layouts` từ application.html.erb, nhưng ta muốn loại bỏ đi 1 vài CSS không cần thiết
+    ```
+    ruby
+      # app/views/layouts/static_pages.html.erb
+      <% content_for :stylesheets do %>
+        #navbar {display: none}
+      <% end %>
+      <%= render :template => "layouts/application" %>
+    ```
+    - Sau đó trong `application layout` ta cần thiết lập để lọc lấy nội dung đó và sử dụng chúng
+    ```ruby
+      # app/views/layouts/application.html.erb
+      ...
+      <head>
+        ...
+        <style><%= yield :stylesheets %></style>
+      </head>
+      ...
+      render :template => "static_pages.html.erb"
+      ...
+    ```
+    - Khi `yield` đến `block content :stylesheet` nó sẽ chèn nội dung bên trong `content_for` đến nơi chứa yield method
+    - Như trong ví dụ trên, ta sẽ chèn 1 vài nội dung CSS vào trong content_for, toàn bộ nội dung này sẽ nằm trong 1 `layout` là `static_page`, sau đó trong `application.html.erb` ta sẽ `render` ra `layout` - `StaticPage`, toàn bộ nội dung CSS này sẽ được đưa vào trong `application.html.erb`
+    ```ruby
+      # app/views/layouts/application.html.erb
+      ...
+      <head>
+        ...
+        <style> #navbar {display: none} </style>
+      </head>
+      ...
+    ```
+  #### 12.3. Metaprogramming Rails
+  * Có thể hiểu như lập trình trong lập trình
+  * Ta có thể thay đổi codes của chương trình khi chương trình đang chạy
+  * VD: Ta có thể tạo mới, xóa các phương thức hiện có trên `object, class` để tránh lặp codes
+    - Tạo ra 1 cặp helper_url: xxx_path, xxx_url
+    - Sử dụng `send method` để thực thi các `method` do `Metaprogramming` sinh ra, nó sẽ gửi đi với các đối số mình muốn
+      * VD: 
+      ```ruby
+      > 1 + 2
+      ==> 3
+        
+      > 1.send(:+, 2)
+      ==> 3
+      ```
+    - VD:
+    ```ruby
+      class Rubyist
+        define_method :hello do |my_arg|
+          my_arg
+        end
+      end
+
+      obj = Rubyist.new
+      puts(obj.hello('User')) # => User
+
+      # method hello sẽ được tạo ra khi gọi
+    ```
