@@ -386,6 +386,7 @@
     - `numericality: true` kiểu số
     - `format: { with: VALID_EMAIL_REGEX }`: email
     - `inclusion: {in: [true, false]}` xét gía trị có thuộc 1 tập cho trước không
+    - `attr_reader: model`: map model với @model
 
 ### 15. Phân biệt destroy, delete
   * Cả 2 phương thức này đều xóa bản ghi trong db
