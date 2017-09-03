@@ -442,3 +442,40 @@
   #### 4.7.1. React DnD Implementation Overview
   * higher-order component sẽ dùng để implement cho React DnD
   * Nó là các JS functions
+    - `import ... from 'react-dnd';`
+      * Ơ 1 app cần `Drag-Drop` ta cần 3 loại components bên cạnh `App component`
+        - `Draggable Snack` sẽ kế thừa từ `DragSource higher-order component`
+        - `ShoppingCart` sẽ kế thừa từ `DropTarget higher-order component`
+        - `Container component` sẽ bao gồm: `ShoppingCart` + rất nhiều Snacks, kế thừa từ `DragDropContext`
+      * The Container
+        - `export` ra dưới dạng 1 component ở cấp cao hơn, `import` và sử dụng `HTML5Backend` với `React-dnd`
+        - `React Drag-Drop` cũng hỗ trợ các `backend` khác
+      * DragSource and DropTarget Higher Order Components
+        - Với các components kế thừa từ `dragSource`, `dropTarget` ta cần cung cấp 3 tham số: type, spec, tập hợp các `function` `(collecting function)`
+        - `Type`
+          * Bản chất là name của component
+          * Với các UI phức tạp, có thể có nhiều types của `dragSource` và `dropTarget` tương tác với nhau - quan trọng là chúng phải khác nhau
+        - `Spec Object`
+          * Miêu tả cách mà các components con tương tác, phản ứng với các `drag, drop events`
+          * Nó chỉ đơn thuần là JS object, có các functions sẽ được gọi khi sự kiện kéo thả xảy ra
+            + `beginDrag`, `endDrag` - `DragSource`
+            + `canDrag`, `onDrop` - `DropTarget`
+        - `Collecting Function`
+          * Trong `ReactDnD` thì `dragSource` và `dropTarget` cũng sẽ truyền các props xuống các component con
+          * Thay vì truyền toàn bộ props xuống, collecting function sẽ đem đến cho người dùng khả năng kiểm soát, điều khiển cách các props được truyền xuống cũng như số lượng props được truyền - có thể tiền xử lí props được
+          * Khi tương tác kéo thả xảy ra `ReactDnD` sẽ gọi thực thi các `collecting function` định nghĩa trong component, truyền vào 2 tham số: `connector`, `monitor`
+          * `connector` sẽ phải map với props dùng để phân cách component vs DOM's component
+            + Với dragSource thì thành phần này sẽ dùng để biểu diễn component khi nó được kéo
+            + Với dropTarget thì thành phần phân cách này sẽ được sử dụng như drop area
+          * `monitor` sẽ map props với Drag'nDrop state
+            + drag drop là thao tác stateful - nó có thể đang xử lí hoặc nhàn rỗi
+            + Nếu nó đang xử lí thì sẽ có current type, current item
+            + Sử dụng monitor ta có thể tạo ra các props: isDragging, canDrop, .. -> khá hữu dụng khi render các component dựa theo nội dung
+          * map DnD state -> component's props
+        - `splice(index, howmany, item_1, ..., item_n)`: chèn phần tử
+          * `index`: vị trí bắt đầu chèn
+          * `howmany`: số phần tử bị bỏ đi
+      * Throttle Callbacks
+        - Vì vấn đề về mặt hiệu năng nên thay vì dùng phiên bản gốc của function ta sẽ sử dụng 1 phiên bản `throttled` của các functions
+          * Tham số truyền vào bao gồm 2 cái: function gốc, khoảng thời gian timeout (wait)
+          * Khi ta gọi hàm nhiều lần thì phiên bản gốc cùa hàm sẽ được gọi nhiều nhất 1 lần trong khoảng `wait milisecond`
