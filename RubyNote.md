@@ -84,6 +84,7 @@
     - Biểu thức của `draft` sẽ được gọi lại mỗi khi scope được thực thi
   #### 9.2 Scope cũng là class method
   * Bản thân `ActiveRecord` cũng đã chuyển đổi `scope` thành `class method`
+  * `Scope` trả về `ActiveRecord:Relation`, thay vì trả về `nil` nó sẽ trả về mọi bản ghi - khác với `class method` 
   * VD:
     ```ruby
       def self.scope name, body
