@@ -102,7 +102,7 @@
     // isShowingModal lưu trong state
   ```
 
-## 7. Allert
+## 7. Alert
   ```javascript
   import AlertContainer from 'react-alert';
     alert_option = {
@@ -120,4 +120,60 @@
         icon: <img src="path/to/some/img/32x32.png" />
       })
     }
+  ```
+## 8. React Router
+### 8.1. Router
+  * `<Router>`: giao diện level thấp cho mọi `routers components`
+  * Thường thì app sẽ sử dụng 1 trong số các `router level cao hơn` sau đây
+    - `<BrowserRouter>`
+    - `<HashRouter>`
+    - `<MemoryRouter>`
+    - `<NativeRouter>`
+    - `<StaticRouter>`
+  * Thường dùng khi muốn đồng bộ hóa `custom history` với `state management lib: Redux`
+  * `history: object`: sử dụng cho navigation - điều hướng
+
+  ```javascript
+    import createBrowserHistory from 'history/createBrowserHistory'
+    
+    const customHistory = createBrowserHistory()
+    <Router history={customHistory}/>
+  ```
+
+### 8.2. BrowserRouter
+  * `router` sử dụng `HTML5 API history` `(pushState, replaceState, popstate event)` gíup UI đồng bộ với URL
+
+  ```javascript
+    import { BrowserRouter } from 'react-router-dom'
+      
+    <BrowserRouter
+      basename={optionalString}
+      forceRefresh={optionalBool}
+      getUserConfirmation={optionalFunc}
+      keyLength={optionalNumber}>
+      <App/>
+    </BrowserRouter>
+  ```
+
+  * `basename: string`: `base URL` cho mọi locations, nếu `server` có `sub-directory` ta nên thiết lập `basename` với `sub-directory`
+    - `basename` có `format` đúng là `basename` bắt đầu với '/', ko kết thúc bởi '/'
+
+  ```javascript
+    <BrowserRouter basename="/calendar" />
+      <Link to="/today"/> // renders <a href="/calendar/today">
+  ```
+
+  * `getUserConfirmation: func`: hàm sử dụng để xác nhận navigation - mặc định là sử dụng `window.confirm`
+    - `window.confirm`: hiển thị `modal dialogs` với `optional message` và `2 button`: `OK`, `Cancel`
+    - `result = window.confirm(message);`: `result`: gía trị trả về: `true` nếu ấn `OK`, `false` nếu ngược lại
+    - `message`: là xâu truyền vào trong `modal dialog`
+
+  ```javascript
+    // this is the default behavior
+      const getConfirmation = (message, callback) => {
+        const allowTransition = window.confirm(message)
+        callback(allowTransition)
+      }
+
+      <BrowserRouter getUserConfirmation={getConfirmation}/>
   ```
