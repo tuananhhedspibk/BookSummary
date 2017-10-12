@@ -177,3 +177,34 @@
 
       <BrowserRouter getUserConfirmation={getConfirmation}/>
   ```
+### 8.3. Route
+  + Sử dụng để render ra UI khi `location match với route's path`
+
+  ```javascript
+    import { BrowserRouter as Router, Route } from 'react-router-dom'
+    <Router>
+      <div>
+        <Route exact path="/" component={Home}/>
+        <Route path="/news" component={NewsFeed}/>
+      </div>
+    </Router>
+
+    // '/':
+      <div>
+        <Home/>
+        <!-- react-empty: 2 -->
+      </div>
+    // '/news':
+      <div>
+        <!-- react-empty: 1 -->
+        <NewsFeed/>
+      </div>
+  ```
+  + `react-empty`: `implement` của `React's null rendering`
+  + Luôn luôn phải render ra Route kể cả khi `React's null rendering`
+  + `Route render methods`
+    - Có `3 cách` để `render với <Route>`
+      * `<Route component>`
+      * `<Route render>`
+      * `<Route children>`
+    - Chỉ nên sử dụng `duy nhất 1 trong số 3 loại trên` - tuy nhiên nên sử dụng `<Route component>`
