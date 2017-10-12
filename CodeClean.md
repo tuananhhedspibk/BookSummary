@@ -23,32 +23,32 @@
       * Nó làm gì
       * Sử dụng như thế nào
     - Nếu tên biến cần chú thích thì mới hiểu được thì đó là tên chưa thể hiện được ý đồ
-    ```
+    ```java
       // Tên chưa tốt:
       int d; // elapsed time in days
 
       // Tên tốt:
       int elapsedTimeInDays;
-			int daysSinceCreation;
+      int daysSinceCreation;
     ```
   + Sử dụng tên có thể phát âm được, tìm kiếm được
     - Tìm kiếm dễ dàng và nhớ nhanh hơn
     ```java
       // Sử dụng:
-				class Customer {
-					private Date generationTimestamp;
-					private Date modificationTimestamp;;
-					private final String recordId = "102";
-					/* ... */
-				};
+      class Customer {
+        private Date generationTimestamp;
+        private Date modificationTimestamp;;
+        private final String recordId = "102";
+        /* ... */
+      };
 
 			// Thay vì:
-				class DtaRcrd102 {
-					private Date genymdhms;
-					private Date modymdhms;
-					private final String pszqint = "102";
-					/* ... */
-				};
+      class DtaRcrd102 {
+        private Date genymdhms;
+        private Date modymdhms;
+        private final String pszqint = "102";
+        /* ... */
+      };
     ```
   + Tránh mã hóa
     - Mã hóa tên biến chỉ làm chúng ta mất công giải mã
@@ -60,17 +60,17 @@
     - Vấn đề này có thể xảy ra khi sử dụng những tên không nằm trong domain của bài toán hoặc những tên khác với tư duy thông thường
     - Ví dụ như đặt tên biến chỉ có 1 chữ cái hay sử dụng các hằng số magic
     ```java
-      int i, j; 
-			int secondsInADay = 24 * 60 * 60;
+      int i, j;
+      int secondsInADay = 24 * 60 * 60;
 			
       // Viết lại đoạn trên một cách rõ ràng hơn:
-					
-			static final int SECONDS_IN_A_MINUTE = 60;
-			static final int MINUTES_IN_AN_HOUR = 60;
-			static final int HOURS_IN_A_DAY = 24;
 
-			int numberOfEmployees, numberOfRooms;
-			int secondsInADay = HOURS_IN_A_DAY * MINUTES_IN_AN_HOUR * SECONDS_IN_A_MINUTE;
+      static final int SECONDS_IN_A_MINUTE = 60;
+      static final int MINUTES_IN_AN_HOUR = 60;
+      static final int HOURS_IN_A_DAY = 24;
+      
+      int numberOfEmployees, numberOfRooms;
+      int secondsInADay = HOURS_IN_A_DAY * MINUTES_IN_AN_HOUR * SECONDS_IN_A_MINUTE;
     ```
   + Tên class
     - Class và các objects nên có tên là các danh từ hoặc cụm danh từ: Customer, WikiPage, Account
@@ -88,7 +88,7 @@
     - Nếu quá nhiều nên đóng gói các tham số liên quan thành 1 class thích hợp
     ```java
       Circle makeCircle(double x, double y, double radius);
-			Circle makeCircle(Point center, double radius);
+      Circle makeCircle(Point center, double radius);
     ```
     - Không nên sử dụng tham số ra, vì chúng ta đã quen với việc nhận thông tin từ tham số đầu vào và trả về qua return
   + Không có tác dụng phụ
