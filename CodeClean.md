@@ -23,6 +23,7 @@
       * Nó làm gì
       * Sử dụng như thế nào
     - Nếu tên biến cần chú thích thì mới hiểu được thì đó là tên chưa thể hiện được ý đồ
+
     ```java
       // Tên chưa tốt:
       int d; // elapsed time in days
@@ -33,6 +34,7 @@
     ```
   + Sử dụng tên có thể phát âm được, tìm kiếm được
     - Tìm kiếm dễ dàng và nhớ nhanh hơn
+
     ```java
       // Sử dụng:
       class Customer {
@@ -41,8 +43,8 @@
         private final String recordId = "102";
         /* ... */
       };
-
-			// Thay vì:
+      
+      // Thay vì:
       class DtaRcrd102 {
         private Date genymdhms;
         private Date modymdhms;
@@ -59,6 +61,7 @@
     - Hạn chế việc người đọc code phải dịch tên mà bạn đặt ra 1 tên khác mà họ biết
     - Vấn đề này có thể xảy ra khi sử dụng những tên không nằm trong domain của bài toán hoặc những tên khác với tư duy thông thường
     - Ví dụ như đặt tên biến chỉ có 1 chữ cái hay sử dụng các hằng số magic
+
     ```java
       int i, j;
       int secondsInADay = 24 * 60 * 60;
@@ -86,6 +89,7 @@
   + Tham số
     - Số lượng tham số không nên quá 2 (lí tưởng)
     - Nếu quá nhiều nên đóng gói các tham số liên quan thành 1 class thích hợp
+
     ```java
       Circle makeCircle(double x, double y, double radius);
       Circle makeCircle(Point center, double radius);
@@ -99,3 +103,55 @@
     - Thực hiện cả 2 sẽ gây khó hiểu cho người đọc
   + Don't Repeat Yourself (DRY)
     - Luôn tách các đoạn code giống nhau thành các hàm riêng biệt để dễ dàng tái sử dụng và bảo trì
+
+## 4. Comment
+
+### 4.1. Comment không thể chữa code xấu
+  + Khi module viết lộn xộn đừng nên comment, hãy viết lại code
+  + Code rõ ràng, ít comment tốt hơn nhiều so với code rắc rối, tùm lum comment
+  + Thay vì mất thời gian viết comment, giải thích code hãy viết lại code
+  + Thay comment bằng các hàm, biến với tên thể hiện rõ ý đồ mong muốn
+
+### 4.2. Comment code không dùng
+  + Có những đoạn code không sử dụng ta comment và nghĩ rằng sau này có thể dùng lại
+  + Đừng nên làm như vậy vì nó sẽ khiến việc đọc code rối rắm, hãy xóa nó đi
+  + Sử dụng các source control như Git sẽ giúp ta có thể xem lại lịch sử file bất cứ lúc nào
+
+## 5. Định dạng
+
+### 5.1. Độ mở theo chiều dọc giữa các nhóm code
+  + Hầu như code được đọc từ trái sang phải, từ trên xuống dưới
+  + Mỗi dòng code thể hiện 1 ý đồ nhất định
+  + Một nhóm các dòng code thể hiện 1 suy nghĩ và có sự liên quan giữa các dòng code
+  + Các suy nghĩ đó nên được tách biệt với nhau bằng 1 khoảng trắng
+
+  ```java
+    package fitnesse.wikitext.widgets;
+    
+    import java.util.regex.*;
+    
+    public class BoldWidget extends ParentWidget {
+      public static final String REGEXP = "'''.+?'''";
+      private static final Pattern pattern = Pattern.compile("'''(.+?)'''",
+        Pattern.MULTILINE + Pattern.DOTALL
+      );
+    }
+  ```
+### 5.2. Khoảng cách giữa các thành phần liên quan
+  + Các thành phần có mối liên quan mật thiết tới nhau nên được đặt gần nhau
+  + Tránh trường hợp phải cuộn lên cuộn xuống hay chạy từ file này sang file khác chỉ để xem các hàm gọi đến nhau như thế nào
+
+#### 5.2.1. Khai báo biến
+  + Biến nên được khai báo gần vị trí sử dụng hết mức có thể
+  + Vì hàm rất ngắn nên khai báo có thể đặt ở đầu hàm
+  + Các thuộc tính của class nên được khai báo ở đầu class để đảm bảo tính nhất quán
+
+#### 5.2.2. Các hàm phụ thuộc
+  + Nếu một hàm gọi 1 hàm khác, chúng nên ở gần nhau
+  + Hàm được gọi nằm ngay dưới hàm gọi
+  + Điều này giúp việc tìm kiếm hàm, đọc hiểu chương trình dễ hơn, tự nhiên hơn
+
+#### 5.2.3. Định dạng theo chiều ngang
+  + Số kí tự tối đa trên mỗi dòng nên được giới hạn, thường là 80
+
+## 6. Sơ lược về code design
