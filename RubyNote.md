@@ -444,3 +444,40 @@
   * Mối quan hệ 1-1 này là thông qua 1 model thứ 3
   ##### 19.2.6. has_and_belongs_to_many Association
   * Tạo ra 1 quan hệ n-n trực tiếp mà không thông qua 1 model khác
+
+### 20. Sử dụng i18n, i18nJS
+
+#### 20.1. i18n
+  * config: Trong file `application.rb` ta thêm các dòng sau
+  ```ruby
+    config.i18n.load_path += Dir[Rails.root.join("my", "locales", "*.{rb,yml}").to_s]
+    config.i18n.default_locale = :en
+  ```
+  * Nếu muốn làm site đa ngôn ngữ, ta sẽ sử dụng scope (:locale) trong route
+  * Khi đó cần làm 1 method chuyển ngôn ngữ
+  ```ruby
+    before_action :set_locale
+  
+    def set_locale
+      I18n.locale = params[:locale] || I18n.default_locale
+    end
+  ```
+  * Trong folder `config/locales/` : ta sẽ tạo ra các file ngôn ngữ dạng `.yml (en.yml, jp.yml, vi.yml, ...)`  
+
+#### 20.2. i18nJS
+  * config:
+    + Thêm `gem "i18n-js"` trong `Gemfile`
+    + Thêm `config.middleware.use I18n::JS::Middleware` vào file `config/environments/development.rb`
+  * Sử dụng câu lệnh: `rails generate i18n:js:config`, câu lệnh này sẽ tạo ra file `config/i18n-js.yml`
+  * Trong file `config/i18n-js.yml`
+  ```yml
+    # Nếu muốn translation cho mọi ngôn ngữ
+    translations:
+      - file: 'app/assets/javascripts/i18n/translations.js' # file translation xuất ra
+        only: "*"
+    # Nếu chỉ muốn translation cho 1 ngôn ngữ cụ thể VD: tiếng việt
+    translations:
+      - file: 'app/assets/javascripts/i18n/translations.js'
+        only: 'vi.*'
+  ```
+  * Chạy lệnh `rake i18n:js:export`: để gen ra file translation.js như đã config ở trên
