@@ -121,8 +121,53 @@
       })
     }
   ```
-## 8. React Router
-### 8.1. Router
+
+## 8. compoent và elements
+  + `component` được tạo ra thông qua việc định nghĩa `class`
+  + Khi chạy ứng dụng, sẽ có các `instances` của `component` chạy trên `UI View`
+    - Mỗi `instace` có các thuộc tính cũng như `states` riêng
+    - Ở các mô hình truyền thống các `component instances` sẽ phải giữ tham chiếu của nó đến `DOM nodes` tương ứng, và tới các `instances` của `child component`
+      * `parent` phải kết nối trực tiếp tới các `children component instances`
+  + Trong `React`: `element` bản chất là `component instance` hoặc `DOM node`, `js object`
+  + `element` không hẳn là `instance`, nó chỉ là cách ta nói với `React` những gì ta muốn nhìn trên màn hình, cho nên ta không thể gọi bất cứ `methods` nào trên `element` được
+    - Nó là `immutable description object` với 2 `fields`:
+      * `type: (string | ReactClass)`
+      * `props: Object`
+
+### 8.1. DOM elements
+  + Khi `type` là 1 `string` ta sẽ có 1 `DOM element`, `props` sẽ tương ứng với các `propeties của tag tương ứng`
+  ```javascript
+    {
+      type: 'button',
+      props: {
+        className: 'button button-blue',
+        children: {
+          type: 'b',
+          props: {
+            children: 'OK!'
+          }
+        }
+      }
+    }
+    // Nếu children chỉ là 1 string thì đó chính là nội dung của tag, nếu là 1 object thì nó sẽ là tag con của tag cha hiện tại
+    // Nếu muốn có 1 children tree, ta chỉ cần tạo ra 1 mảng các child trong children props
+  ```
+
+  + Các element kiểu này chỉ là các `mô tả - description` chú không phải là các `instance` thực sự, chúng không hề tham chiếu tới bất cứ thành phần nào trên màn hình
+  + Chúng nhẹ hơn `DOM elements` khá nhiều - chúng chỉ là `object`
+
+### 8.2. Component elements
+  + Khi `type` là các `functions, class tương ứng với React component` chúng sẽ được coi là `Component elements`
+  + Hoàn toàn có thể mix `2 loại elements` với nhau
+
+## 9. React Router
+
+### 9.0. Sơ lược
+  + Trong `React`, chỉ có `1 file HTML` được gọi. Bất cứ khi nào người dùng nhập 1 đường dẫn mới, thay vì lấy dữ liệu từ `server`, `Router` sẽ chuyển sang `1 Component` khác ứng với mỗi đường dẫn mới. Đối với người dùng thì họ đang chuyển qua lại giữa nhiều trang nhưng thực tế, mỗi `Component` đơn lẻ sẽ được `render lại phụ thuộc đường dẫn`
+  + Trong `React`, `Router` sẽ kiểm tra `History` cho mỗi `Component` và bất cứ khi nào có thay đổi trong `History`, `Component` đó sẽ được `render lại`
+  + Trước khi có `React Router v4`, ta phải set giá trị `History` thủ công. Việc này đã được tự động ở `Router v4` bằng thẻ `<BrowserRouter>`
+
+### 9.1. Router
   * `<Router>`: giao diện level thấp cho mọi `routers components`
   * Thường thì app sẽ sử dụng 1 trong số các `router level cao hơn` sau đây
     - `<BrowserRouter>`
@@ -140,7 +185,7 @@
     <Router history={customHistory}/>
   ```
 
-### 8.2. BrowserRouter
+### 9.2. BrowserRouter
   * `router` sử dụng `HTML5 API history` `(pushState, replaceState, popstate event)` gíup UI đồng bộ với URL
 
   ```javascript
@@ -177,7 +222,7 @@
 
       <BrowserRouter getUserConfirmation={getConfirmation}/>
   ```
-### 8.3. Route
+### 9.3. Route
   + Sử dụng để render ra UI khi `location match với route's path`
 
   ```javascript
@@ -208,3 +253,69 @@
       * `<Route render>`
       * `<Route children>`
     - Chỉ nên sử dụng `duy nhất 1 trong số 3 loại trên` - tuy nhiên nên sử dụng `<Route component>`
+    - `Route props`: 3 `render methods` trên sẽ truyền `3 props`: `match`, `location`, `history`
+    - `Component`
+      * Lúc này khi location được match thì `React.createElement` sẽ được gọi để tạo ra element mới, tương ứng với `Component` được truyền vào `component` - props
+      * `React elements`: là đơn vị nhỏ nhất trong `React`, tương đương như `1 object plain`, `React DOM` sẽ quản lí việc update `DOM match với React elements`
+      * Bản chất ở đây là `unmount component hiện tại` và `mounting component mới` thay vì `update component hiện tại`
+      * Nếu trong `component` là `1 inline function` -> mỗi khi render sẽ tạo ra `1 component mới` -> thường dùng với `render`, `children`
+    - `Render`: func
+      * Render không cần `mount`
+      * `<Route component>` ưu tiên cao hơn `<Route render>` -> ko dùng trong cùng `<Route>`
+    - `Children`: func
+      * Đôi khi ta cần render ra kể cả khi location `match path` hay `ko match`
+      * `children` hoạt động giống như `render` ngoại trừ việc nó được gọi ngay cả khi `ko match`
+    - `path`
+      + `Route` ko có path thì luôn luôn match
+    - `location`: object
+
+### 9.4. Redirect
+  + `current location` sẽ được lưu trữ tại `history stack`
+  + `<Redirect> element` sẽ override `current location`
+  + `to`: `string`: `URL` sẽ `redirect tới`
+  + `to`: `Object`: `location` sẽ `redirect tới`
+  + Mặc định thì `<Redirect>` sẽ thay thế `1 entry trong history stack` hiện tại
+    - Nếu `push: bool = true` -> sẽ `push 1 "entry mới"` vào trong `history stack`
+    - `from: string`: chỉ được sử dụng để chỉ `URL gốc` trong TH nó được lồng trong `<Switch>`
+
+### 9.5. Switch
+  + Sẽ bao ngoài nhiều `<Route>`
+  - Nếu `1 <Route>` có thể match nhiều `URL`
+  ```javascript
+    <Route path="/about" component={About}/>
+    <Route path="/:user" component={User}/>
+    <Route component={NoMatch}/>
+    // Nếu URL là: "/about" -> cả 3 component đều match
+    // Tuy nhiên ta muốn chỉ 1 <Route> được render ra mà thôi
+
+    import { Switch, Route } from 'react-router'
+    <Switch>
+      <Route exact path="/" component={Home}/>
+      <Route path="/about" component={About}/>
+      <Route path="/:user" component={User}/>
+      <Route component={NoMatch}/>
+    </Switch>
+    // Nếu vậy thì khi URL là /about thì sẽ chỉ có about match mà thôi, sau khi match xong thì Switch sẽ ngừng tìm kiếm các Route matched khác
+    // Route sẽ match dựa vào path, Redirect sẽ match dựa vào from
+  ```
+  - `location`: object
+    * `match` với `children elements` thay vì `current history location`
+
+### 9.6. history
+  + Thường sẽ dùng `browser history` với các browsers hỗ trợ `HTML5 history API`
+  + Các `methods, properties` của `history object`
+    - `location` - `object`
+    - `push(path, [state])`: push `new entry` vào `history stack`
+    - `history is mutable`: có thể thay đổi vì thế nên truy nhập vào location nhận từ `props của <Route>` ko phải từ `history.location`
+
+### 9.7. location
+  + `Route` chứa `location` trong: `props.location` -> không nên sử dụng `location trong history.location`
+  + `location object`: không bao giờ bị thay đổi
+  ```javascript
+    const location = {
+      pathname: '/somewhere'
+      state: { fromDashboard: true }
+    }
+
+    <Link to={location}/>
+  ```
