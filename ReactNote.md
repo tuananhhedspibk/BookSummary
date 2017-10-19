@@ -341,3 +341,39 @@
     - `Type` thường sẽ là `1 hằng số` được định nghĩa trước: `MESSAGE_CREATE` hay `MESSAGE_READ`
     - Nên định nghĩa trước các `Type` dưới dạng `hằng số` trong 1 file vì khi đó sẽ dễ dàng hiểu được project
   + Sau khi `The Action Creator"`tạo ra 1 `Action` -> sẽ gửi nó cho `The Dispatcher`
+
+### 10.3. The Dispatcher
+  + Về cơ bản là 1 tập hợp của rất nhiều các `callbacks`
+  + Luôn biết trước 1 danh sách các `store` để gửi `action` tới
+  + Khi 1 `action` được gửi tới `The Dispatcher` thì nó sẽ gửi `action` tới `store` tương ứng theo quy tắc đồng bộ
+  + `action` được gửi đến mọi `store` đăng kí với `Dispatcher` - bất kể `type gì`
+  + Mỗi `store` sẽ nhận nghe mọi `action` & tự `filter` để xử lí
+
+### 10.4. The Store
+  + Gĩư toàn bộ `trạng thái` & `logic chuyển trạng thái` của app
+  + Tất cả mọi thay đổi trạng thái đều được thực thi trực tiếp ở đây
+  + Mỗi khi muốn thay đổi 1 trạng thái ta cần tạo ra 1 `action`, `submit` vào `Action creator`, đi qua `The Dispatcher` rồi mới được `The Store` xử lí
+  + `1 store` sẽ nhận về khá nhiều `actions` nhưng trong `store` sẽ có 1 `cấu trúc switch` để quyết định xem có cần phải quan tâm tới `action` hay không
+
+### 10.5. The controller view and the view
+  + `The view` có nhiệm vụ nhận các thay đổi trạng thái và render hiển thị, cũng như nhận input từ người dùng
+  + `The view` sẽ chỉ biết đến dữ liệu và cách hiển thị dữ liệu đó (thành HTML) cho người dùng
+  + `The controller view` sẽ đứng giữa `store` và `view`
+    - Nhận thông báo khi trạng thái thay đổi
+    - Tổng hợp lại những nội dung cần thay đổi và truyền đến view trực thuộc
+
+### 10.6. Workflow (Setup)
+  + 1. `Store` sẽ đưa cho `Dispatcher`: `callback`, khi nào có `action` thì `callbacks` sẽ được `trigger`
+  + 2. `Controller view` hỏi `Store` về trạng thái cuối
+  + 3. Sau khi `Store` đưa trạng thái cuối cho `Controller view`, `Controller view` sẽ đưa cho `view` để `render hiển thị`
+  + 4. `Controller` và `View` cũng nhắn với `Store`
+
+### 10.7. Dataflow
+  + Sau khi `setup`, app đã sẵn sàng nhận input
+  + Nếu lúc này `trigger 1 action` bằng cách để người dùng tạo ra 1 sự thay đổi
+    - 1. `View` sẽ nói với `Action Creator` tạo ra `1 action`
+    - 2. `Action Creator` tạo ra `1 action` và chuyển tới `The Dispatcher`
+    - 3. `Action Dispatcher` gửi lại `action` cho `mọi store liên quan`. `Mỗi store` nhận `action` xong sẽ quyết định xem có thay đổi trạng thái dựa vào action hay không
+    - 4. Sau khi thay đổi trạng thái xong, `Store` sẽ lại thông báo cho `View Controller` đã đăng kí
+    - 5. `View Controller` hỏi lại `Store` cụ thể về trạng thái mới
+    - 6. Sau khi nói lại cho `View Controller` các thông tin trạng thái cụ thể, `View Controller` sẽ nói lại với các `Views` của mình `render lại hiển thị`
