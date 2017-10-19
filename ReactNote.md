@@ -122,7 +122,7 @@
     }
   ```
 
-## 8. compoent và elements
+## 8. Component và elements
   + `component` được tạo ra thông qua việc định nghĩa `class`
   + Khi chạy ứng dụng, sẽ có các `instances` của `component` chạy trên `UI View`
     - Mỗi `instace` có các thuộc tính cũng như `states` riêng
@@ -363,17 +363,108 @@
     - Tổng hợp lại những nội dung cần thay đổi và truyền đến view trực thuộc
 
 ### 10.6. Workflow (Setup)
-  + 1. `Store` sẽ đưa cho `Dispatcher`: `callback`, khi nào có `action` thì `callbacks` sẽ được `trigger`
-  + 2. `Controller view` hỏi `Store` về trạng thái cuối
-  + 3. Sau khi `Store` đưa trạng thái cuối cho `Controller view`, `Controller view` sẽ đưa cho `view` để `render hiển thị`
-  + 4. `Controller` và `View` cũng nhắn với `Store`
+  1. `Store` sẽ đưa cho `Dispatcher`: `callback`, khi nào có `action` thì `callbacks` sẽ được `trigger`
+  2. `Controller view` hỏi `Store` về trạng thái cuối
+  3. Sau khi `Store` đưa trạng thái cuối cho `Controller view`, `Controller view` sẽ đưa cho `view` để `render hiển thị`
+  4. `Controller` và `View` cũng nhắn với `Store`
 
 ### 10.7. Dataflow
   + Sau khi `setup`, app đã sẵn sàng nhận input
   + Nếu lúc này `trigger 1 action` bằng cách để người dùng tạo ra 1 sự thay đổi
-    - 1. `View` sẽ nói với `Action Creator` tạo ra `1 action`
-    - 2. `Action Creator` tạo ra `1 action` và chuyển tới `The Dispatcher`
-    - 3. `Action Dispatcher` gửi lại `action` cho `mọi store liên quan`. `Mỗi store` nhận `action` xong sẽ quyết định xem có thay đổi trạng thái dựa vào action hay không
-    - 4. Sau khi thay đổi trạng thái xong, `Store` sẽ lại thông báo cho `View Controller` đã đăng kí
-    - 5. `View Controller` hỏi lại `Store` cụ thể về trạng thái mới
-    - 6. Sau khi nói lại cho `View Controller` các thông tin trạng thái cụ thể, `View Controller` sẽ nói lại với các `Views` của mình `render lại hiển thị`
+    1. `View` sẽ nói với `Action Creator` tạo ra `1 action`
+    2. `Action Creator` tạo ra `1 action` và chuyển tới `The Dispatcher`
+    3. `Action Dispatcher` gửi lại `action` cho `mọi store liên quan`. `Mỗi store` nhận `action` xong sẽ quyết định xem có thay đổi trạng thái dựa vào action hay không
+    4. Sau khi thay đổi trạng thái xong, `Store` sẽ lại thông báo cho `View Controller` đã đăng kí
+    5. `View Controller` hỏi lại `Store` cụ thể về trạng thái mới
+    6. Sau khi nói lại cho `View Controller` các thông tin trạng thái cụ thể, `View Controller` sẽ nói lại với các `Views` của mình `render lại hiển thị`
+
+## 11. Redux
+
+### 11.0. Mô hình
+
+#### 11.0.1. The Action Creator
+  + Cứ khi nào có tương tác từ phiá người dùng, hay trạng thái của app thay đổi thì `action creator` sẽ tạo ra các `action`
+  + Mỗi `1 action` sẽ là 1 `formatted object` chứa `type` cũng như các dữ liệu khác
+    - `type` thường sẽ là 1 hằng số được định nghĩa trước: `INCREASE`, `DECREASE`
+
+#### 11.0.2. The Store
+  + Quản lí `state tree (getState, updateState, registerListener...)`
+  + Thực ra `The Store` sẽ chỉ quản lí `state` mà thôi
+  + Sau khi nhận được `actions` nó sẽ gửi cho `The Reducer` để xem xem `state` thay đổi ra sao
+  + Trong `Redux` sử dụng tư tưởng của `Functional programming` nên `Store` tự biết cách hiểu `action` và tự điều phối nó
+
+#### 11.0.3. The Reducers
+  + Trong `The Reducers` sẽ có 1 `root reducer`
+  + `root reducer` sẽ có nhiệm vụ cắt ra `state cần thay đổi` dựa trên `keys` mà `Store` gửi tới và đưa cho `reducer` biết cách xử lí
+  + Các `reducer` sẽ tạo ra bản sao cho những thứ được đưa cho và thao tác trên bản sao đó
+  + Sau khi các thao tác hoàn tất thì `các mảnh state` sẽ được ghép lại với nhau để tạo ra `1 state mới`
+  + `Redux` không thao tác trên `state`
+  + `root reducer` sẽ ghép các `mảnh state` lại
+  + Sau đó `root reducer` sẽ gửi lại các `state mới` cho `Store` và `Store` sẽ sử dụng các `state mới` này 
+
+#### 11.0.4. The views: smart and dumb components
+  + `Smart component`: có thể gọi là `containers`
+    - Khi các thành viên phía dưới của nó (`Dumb component`) muốn phát ra các `actions`, `Smart component` sẽ gửi `action` cho các thành viên dưới dạng `props`
+    - `Dumb components` chỉ cần quan tâm chúng như các `callbacks`
+    - Khi cần thay đổi `DOM` thì nó sẽ sắp xếp cho các thành viên phía dưới làm chứ không tự làm
+    - Không có `CSS`
+  + `Dumb components`: có thể gọi là `components`
+    - Có `CSS` riêng
+    - Nhận `props type` từ `Smart component`
+    - Không phụ thuộc trực tiếp vào `action`
+
+#### 11.0.5. The view layer binding
+  + Trong `React` nó sẽ là `react-redux`
+  + Kết nối `The Store` và `The views`
+  + Cung cấp 3 khái niệm
+    - `The Provider component`: Là thành phần bao quanh `components tree`, giúp các `components con` kết nối dễ dàng với `Store` thông qua `connect()`
+    - `connect()` là hàm cung cấp bởi `The Provider component`, nếu `1 component` nào đó muốn nhận được `update State` thì nó phải tự bao lại bằng `connect()`,
+    sau đó `connect()` sẽ thiết lập tất cả các hệ thống liên kết cho `component` bằng cách sử dụng `selector`
+    - `selector` sẽ là hàm tự viết, nó sẽ chỉ rõ phần nào của `state` mà `component` cần như `properties`
+
+#### 11.0.6. The root component
+  + Mọi `React app` đều có `root component`
+  + Tạo ra `The Store`, chỉ định `The reducers` nào được sử dụng, tập hợp `The view layer binding` cùng với `The Views`
+  + Sau khi tập hợp đầy đủ, các bộ phận bên dưới sẽ tự hoạt động
+
+#### 11.0.7. Setup
+  1. `Root component` sẽ tạo ra `Store`, chỉ cho `Store` dùng `Root reducer` nào thông qua `createStore()`, `Root reducer` sẽ tập hợp các `reducers` lại thông qua `combineReducers()`
+  2. `Root component` sẽ bao các `subcomponents` với `Provider component(The view layer binding)`, tạo ra kết nối giữa các `Provider`, `Provider` sẽ tạo ra 1 mạng cơ bản để cập nhật các `components`, `Smart Component` kết nối vào mạng bằng `connect()`, đảm bảo các `components` này nhận được `state`
+  3. Chuẩn bị các `actions callback`: Để các `Dump Components` làm việc với `Action` dễ dàng hơn, các `Smart Components` có thể chuẩn bị các `action callback` thông qua `bindActionCreators()`. Bằng cách này, họ chỉ có cần truyền các callback cho Dump Components. Các Actions sẽ được tự động gửi đi sau khi nó được định dạng.
+
+### 11.1. Basics
+
+#### 11.1.1 Actions
+  + Là các `payloads`
+  + Có nhiệm vụ gửi dữ liệu từ `app` xuống tới `store`
+  + Chúng là nguồn thông tin duy nhất cho `store`
+  + Các `actions` được gửi đến `store` thông qua phương thức: `store.dispatch()`
+  + `actions`: là các `JS objects thuần`
+  + `action` phải có `type property` để định nghĩa loại hành động mà nó thực thi
+  ```javascript
+    const ADD_TODO = 'ADD_TODO'
+    {
+      type: ADD_TODO,
+      text: 'Build my first Redux app'
+    }
+  ```
+  + `type` nên được định nghĩa như là các `string constant`
+  + Có thể để các `actions` vào trong mảng, mỗi khi có 1 phần tử mới được tạo ra, ta sẽ gen cho nó `1 ID duy nhất`
+  ```javascript
+    {
+      type: TOGGLE_TODO,
+      index: 5
+    }
+  ```
+
+#### 11.1.2. Action Creators
+  + Bản chất là các `functions` tạo ra các `actions`
+  + Trong `Redux` thì `actions creator` chỉ đơn thuần trả về `1 action`
+  ```javascript
+    function addTodo(text) {
+      return {
+        type: ADD_TODO,
+        text
+      }
+    }
+  ```
