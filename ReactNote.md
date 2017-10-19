@@ -319,3 +319,25 @@
 
     <Link to={location}/>
   ```
+
+## 10. Flux
+
+### 10.1. Giải pháp dữ liệu 1 hướng
+  + Dữ liệu chỉ di chuyển theo 1 và chỉ 1 hướng duy nhất
+  + Khi 1 dữ liệu mới xuất hiện, luồng sẽ bắt đầu lại từ đầu
+  ```javascript
+    Action -> Dispatcher -> Store -> View
+    ^	                          |			
+	|_______________________________v
+  ```
+
+### 10.2. The Action Creator
+  + Có nhiệm vụ là tạo ra các `action`
+  + Là bước đầu tiên trong luồng mà các thay đổi, tương tác đều đi qua
+  + Khi nào mà trạng thái của `Web app` thay đổi, `rendered view` thay đổi thì đầu tiên là 1 `action` sẽ được tạo ra
+    - `Action` sẽ có định dạng mà mọi thành phần hiểu được
+    - Biết ta cần truyền đạt điều gì
+  + `The Action Creator` sẽ tạo ra 1 `action` cùng với `type` & `payload` của `action` đó
+    - `Type` thường sẽ là `1 hằng số` được định nghĩa trước: `MESSAGE_CREATE` hay `MESSAGE_READ`
+    - Nên định nghĩa trước các `Type` dưới dạng `hằng số` trong 1 file vì khi đó sẽ dễ dàng hiểu được project
+  + Sau khi `The Action Creator"`tạo ra 1 `Action` -> sẽ gửi nó cho `The Dispatcher`
