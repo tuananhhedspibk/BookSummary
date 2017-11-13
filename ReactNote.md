@@ -1,5 +1,18 @@
 # React note :green_book: :memo:
 
+## 0. React Javascript
+### 0.1. Toán tử ...
+  * Dùng để copy `object`, `array`
+  * `obj2 = {...obj, [att: value]}`
+    - `att`: có thể là att mới, hoặc có thể là att hiện có - ghi đè
+  * `var arrCP = [[value, value, ...], ...arr, [value, value, ...]]`
+### 0.2. Pure function
+  * Là các function không có `side effect`
+  * `Side effect` bao gồm:
+    - Các tác dụng làm thay đổi `biến bên ngoài`, `tham số đầu vào`
+    - Chứa `async task`
+  * Nó còn là các function `one input - one output`: với cùng 1 đầu vào chỉ cho ra duy nhất 1 đầu ra
+
 ## 1. React, Route
   ```javascript
    import {Router, Route} from 'react-router';
@@ -392,6 +405,7 @@
   + Thực ra `The Store` sẽ chỉ quản lí `state` mà thôi
   + Sau khi nhận được `actions` nó sẽ gửi cho `The Reducer` để xem xem `state` thay đổi ra sao
   + Trong `Redux` sử dụng tư tưởng của `Functional programming` nên `Store` tự biết cách hiểu `action` và tự điều phối nó
+  + Các `state` là các `private object` được bao bởi `store`
 
 #### 11.0.3. The Reducers
   + Trong `The Reducers` sẽ có 1 `root reducer`
@@ -467,4 +481,54 @@
         text
       }
     }
+  ```
+  + Trong `Redux` không có `The Dispatcher` nên sau khi tạo ra `action`, nó sẽ được truyền cho `Store` thông qua hàm `dispatch()`
+  ```javascript
+    dispatch(addTodo(text))
+    dispatch(completeTodo(index))
+  ```
+  + Có thể tạo ra `bound action creator`
+  ```javascript
+    const boundAddTodo = text => dispatch(addTodo(text))
+    const boundCompleteTodo = index => dispatch(completeTodo(index))
+  ```
+  + Bây giờ có thể gọi trực tiếp:
+  ```javascript
+    boundAddTodo(text)
+    boundCompleteTodo(index)
+  ```
+  + Có thể dùng `store.dispatch()` nhưng nên dùng `connect()` của `react-redux`
+  + Có thể sử dụng `bindActionCreators()` để tự động bind các `action creators` vào hàm `dispatch()`
+
+#### 11.1.3. Reducers
+  + Chỉ rõ cách `state` thay đổi như thế nào trong `app`
+
+##### 11.1.3.1. Designing the State Shape
+  + Trong `Redux` mọi `state` được lưu trong `1 object` duy nhất
+  + Trước khi code, nên thiết kế `State Shape` trước
+  + Luôn giữ cho `data` tách biệt so với `UI State`
+
+##### 11.1.3.2. Handling Actions
+  + Reducer là 1 hàm, nhận vào `previousState`, `action` và trả về `nextState`
+  ```javascript
+    (previousState, action) => newState
+  ```
+  + Trong `Reducer` sẽ không:
+    - Thay đổi arguments
+    - Thực hiện `call API`, `routing transitions`
+    - Gọi `non-pure function`
+  + Khi `reducer` được gọi lần đầu tiên, nó sẽ được trả về `undefined state`
+  + Trong trường hợp mà `reducer` không match bất cứ `actions` nào, ta sẽ trả về `state ban đầu`
+
+##### 11.1.3.3. Handling More Actions
+##### 11.1.3.4. Splitting Reducers
+  + `reducer composition`: là việc ta tạo ra 1 `reducer` và nó sẽ bao lấy các `reducers con` khác, các `reducers con` này
+    sẽ tương ứng với từng `state` một, `reducer lớn hơn kia` được gọi là `root reducer`, các `reducers con` sẽ quản lí các
+    `state` khác nhau và đều thuộc về `global state`
+  + `Redux` cung cấp `combineReducers()` để tổ hợp các `reducers` lại với nhau
+  ```javascript
+    const todoApp = combineReducers({
+      [visi: ]visibilityFilter,
+      [td: ]todos
+    })
   ```
