@@ -532,3 +532,12 @@
       [td: ]todos
     })
   ```
+
+#### 11.1.4. Store
+  + Là `object` bao ngoài `The reducers và The state`
+  + Nó có chức năng:
+    - Lưu các `states`
+    - Cho phép truy cập `state` thông qua `getState()`
+    - Cho phép `update state` thông qua `dispatch(action)`
+    - Đăng kí `lister`: `subscribe(listener)`
+    - Xử lí bỏ listeners thông qua hàm trả về bởi `subscribe(listener)`
