@@ -541,3 +541,55 @@
     - Cho phép `update state` thông qua `dispatch(action)`
     - Đăng kí `lister`: `subscribe(listener)`
     - Xử lí bỏ listeners thông qua hàm trả về bởi `subscribe(listener)`
+    - Trong `Redux app` chỉ có duy nhất `1 store`
+  
+#### 11.1.5. Dispatching Actions
+  + `store.dispatch(action)`
+
+#### 11.1.6. Data Flow
+  + Trong kiến trúc `Redux` là `strict unidirectional data flow`
+  + Mọi dữ liệu đều có cùng `life cycle pattern`
+  + Đơn giản hóa dữ liệu -> dữ liệu sẽ không cần phải copy ở nhiều nơi
+  + `Data life cycle`
+    - (1): `store.dispatch(action)` - có thể được gọi từ bất cứ đâu
+    - (2): The Redux store calls the reducer function you gave it
+    - (3): The root reducer may combine the output of multiple reducers into a single state tree.
+      * Nhờ có `combineReducers()` ta có thể chia `root reducer` thành các `reducers con` quản lí từng phần của `state chung`
+      * Khi emit 1 action, toàn bộ `reducers` sẽ được gọi, sau đó nó sẽ kết hợp toàn bộ kết quả trả về lại thành 1 `state tree`
+        hoàn chỉnh
+    - (4): The Redux store saves the complete state tree returned by the root reducer
+      * Đây chính là `state mới` của app
+      * `store.subscribe(listener)` sẽ được gọi
+      * Trong `listener` có thể dùng `store.getState()` để lấy về state
+      * UI có thể được update khi có state mới
+
+#### 11.1.7. Redux dev tool
+  ```javascript
+    var store = redux.createStore(reducer, redux.compose(
+      window.devToolsExtension ? window.devToolsExtension(): f => f
+    ));
+  ```
+
+#### 11.1.8. Presentational & Container component
+  + `Presentational component`:
+    - Liên quan đến việc hiển thị, có style riêng
+    - Có thể bao gồm `Presentational & Container component`
+    - Có thể cho phép bao chứa thông qua `this.props.children`
+    - Nhận dữ liệu, callback thông qua `props`
+    - Hiếm khi có `state` - nếu có thì thường là `UI state`
+    - Thường viết ở dạng `functional component` - là cách viết thường dùng khi `component` không có `state`
+  ```javascript
+      var Aquarium = (props) => {
+      var fish = getFish(props.species);
+      return <Tank>{fish}</Tank>;
+    };
+  ```
+    - Có `DOM markup`
+    - VD: `Sidebar`, `Story`, `List`, ...
+  + `Container component`:
+    - Liên quan đến việc mọi thứ làm việc như thế nào - `data fetching`, `state updates`
+    - Không có style, `DOM markup`
+    - Cung cấp dữ liệu và hành động cho các `components` khác - action sẽ được cung cấp như là các `callbacks`
+    - Thường được tạo ra thông qua `connect()` của `react-redux`
+    - Subscribe `redux state`
+    - Sẽ là cầu nối giữa `Presentational component` tới `Redux`
