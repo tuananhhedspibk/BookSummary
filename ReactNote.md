@@ -593,3 +593,23 @@
     - Thường được tạo ra thông qua `connect()` của `react-redux`
     - Subscribe `redux state`
     - Sẽ là cầu nối giữa `Presentational component` tới `Redux`
+
+#### 11.1.9. connect function
+  + Kết nối `React component` tới `Redux store`
+  + `connect([mapStateToProps], [mapDispatchToProps], [mergeProps], [options])`
+  + `mapStateToProps(state, [ownProps])`: nếu có thì component mới trả về - hàm connect sẽ trả về 1 component
+    mới sẽ `subscribe` `Redux store`
+    - `state param` sẽ là `store state`, `ownProps param` sẽ là props truyền cho `connect component`
+    - Cứ khi nào `store updated` thì `mapStateToProps` sẽ được gọi
+  + `mapDispatchToProps(dispatch, [ownProps])`: trong đây sẽ là các hàm ứng với các `action creator` được bao gói bởi
+    `dispatch`
+
+### 11.2. Advanced
+
+#### 11.2.1. Async Actions
+  + Actions:
+    - Khi gọi API async ta cần quan tâm tới 2 thời điểm: bắt đầu gọi, kết thúc (có thể timeouts)
+      * Đều yêu cầu thay đổi `App state`
+    - Thường thì ta sẽ muốn dispatch 3 loại actions sau khi gọi API (các actions này được xử lí đồng bộ bởi reducers)
+      * Action thông báo cho `reducer` có request tới
+        + 
