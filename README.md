@@ -12,9 +12,9 @@ High priority: 👆
 7. https://github.com/tuananhhedspibk/CleanArchitecture (WIP)
 
 Low priority: 👇
-8. https://github.com/tuananhhedspibk/DesignPattern (WIP)
-9. https://github.com/tuananhhedspibk/DontMakeMeThink (WIP)
-10. https://github.com/tuananhhedspibk/FormDesign (WIP)
-11. https://github.com/tuananhhedspibk/ProductOwner (WIP)
-12. https://github.com/tuananhhedspibk/UITextBook (WIP)
-13. https://github.com/tuananhhedspibk/UIDesignSystem (WIP)
+1. https://github.com/tuananhhedspibk/DesignPattern (WIP)
+2. https://github.com/tuananhhedspibk/DontMakeMeThink (WIP)
+3. https://github.com/tuananhhedspibk/FormDesign (WIP)
+4. https://github.com/tuananhhedspibk/ProductOwner (WIP)
+5. https://github.com/tuananhhedspibk/UITextBook (WIP)
+6. https://github.com/tuananhhedspibk/UIDesignSystem (WIP)
