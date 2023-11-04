@@ -8,7 +8,7 @@ High priority: 👆
 3. https://github.com/tuananhhedspibk/DDD-Sampling-FAQ 🎉
 4. https://github.com/tuananhhedspibk/AWSSolutionArchitecture 😴 
 5. https://github.com/tuananhhedspibk/DDD-Modeling 🎉
-6. https://github.com/tuananhhedspibk/SystemDesignInterview 🛠️
+6. https://github.com/tuananhhedspibk/SystemDesignInterview 🎉
 7. https://github.com/tuananhhedspibk/DatabaseDesign 😴 
 8. https://github.com/tuananhhedspibk/LearnFromFailedRDB 😴 
 9. https://github.com/tuananhhedspibk/CleanArchitecture 🛠️
